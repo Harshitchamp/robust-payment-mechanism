@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Interactive Payment Retry Mechanism</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        h2, h3, h4 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .section {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .payment-section {
+            background-color: #cfe2ff;
+        }
+        .retry-section {
+            background-color: #fff3cd;
+        }
+        .settings-section {
+            background-color: #d1ecf1;
+        }
+        .health-check {
+            background-color: #e2e3e5;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .suggestions {
+            color: #856404;
+            font-weight: bold;
+        }
+        .interactive-feedback {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px dashed #007bff;
+            border-radius: 8px;
+            background-color: #e8f0fe;
+        }
+        .feedback-button {
+            background-color: #28a745;
+            margin-top: 10px;
+        }
+        .feedback-button:hover {
+            background-color: #218838;
+        }
+        .search-bar {
+            display: flex;
+            align-items: center;
+        }
+        .search-bar input {
+            flex: 1;
+            margin-right: 10px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            padding: 10px;
+            cursor: pointer;
+        }
+        ul li:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Main Payment Form Section -->
+    <h2>Payment Method</h2>
+    <div class="section payment-section">
+        <label for="paymentMethod">Select Payment Method</label>
+        <select id="paymentMethod" onchange="togglePaymentFields()">
+            <option value="card">Credit/Debit Card</option>
+            <option value="upi">UPI ID</option>
+            <option value="netbanking">Net Banking</option>
+            <option value="paytm">Paytm</option>
+            <option value="phonepe">PhonePe</option>
+            <option value="googlepay">Google Pay</option>
+        </select>
+    </div>
+
+    <!-- Primary Payment Fields -->
+    <div id="primaryPaymentFields" class="section payment-section">
+        <div id="cardFields">
+            <input type="text" id="cardNumber" placeholder="Card Number" required>
+            <input type="text" id="cvv" placeholder="CVV" required>
+            <input type="text" id="expiryDate" placeholder="Expiry Date (MM/YY)" required>
+        </div>
+
+        <div id="upiFields" style="display:none;">
+            <input type="text" id="upiId" placeholder="Enter UPI ID (e.g., username@bank)" required>
+        </div>
+
+        <div id="netbankingFields" style="display:none;">
+            <div class="search-bar">
+                <input type="text" id="bankSearch" placeholder="Search Bank Name" oninput="filterBanks()">
+                <button onclick="searchBank()">Search</button>
+            </div>
+            <ul id="bankList" style="max-height: 100px; overflow-y: auto; display: none;"></ul>
+        </div>
+
+        <div id="paytmFields" style="display:none;">
+            <input type="text" id="paytmId" placeholder="Enter Paytm ID" required>
+        </div>
+
+        <div id="phonepeFields" style="display:none;">
+            <input type="text" id="phonepeId" placeholder="Enter PhonePe ID" required>
+        </div>
+
+        <div id="googlepayFields" style="display:none;">
+            <input type="text" id="googlePayId" placeholder="Enter Google Pay ID" required>
+        </div>
+    </div>
+
+    <!-- Backup Payment Method Section -->
+    <h3>Backup Payment Method</h3>
+    <div class="section payment-section">
+        <label for="backupPaymentMethod">Select Backup Method</label>
+        <select id="backupPaymentMethod" onchange="toggleBackupFields()">
+            <option value="">None</option>
+            <option value="card">Credit/Debit Card</option>
+            <option value="upi">UPI ID</option>
+            <option value="netbanking">Net Banking</option>
+            <option value="paytm">Paytm</option>
+            <option value="phonepe">PhonePe</option>
+            <option value="googlepay">Google Pay</option>
+        </select>
+    </div>
+
+    <!-- Backup Payment Fields -->
+    <div id="backupPaymentFields" class="section payment-section">
+        <div id="backupCardFields" style="display:none;">
+            <input type="text" id="backupCardNumber" placeholder="Backup Card Number" required>
+            <input type="text" id="backupCVV" placeholder="Backup CVV" required>
+            <input type="text" id="backupExpiryDate" placeholder="Backup Expiry Date (MM/YY)" required>
+        </div>
+        <div id="backupPaytmFields" style="display:none;">
+            <input type="text" id="backupPaytmId" placeholder="Backup Paytm ID" required>
+        </div>
+        <div id="backupPhonepeFields" style="display:none;">
+            <input type="text" id="backupPhonepeId" placeholder="Backup PhonePe ID" required>
+        </div>
+        <div id="backupGooglepayFields" style="display:none;">
+            <input type="text" id="backupGooglePayId" placeholder="Backup Google Pay ID" required>
+        </div>
+    </div>
+
+    <!-- Retry Settings Section -->
+    <h3>Retry Settings</h3>
+    <div class="section settings-section">
+        <label for="maxRetries">Max Retries:</label>
+        <input type="number" id="maxRetries" min="1" max="10" value="3">
+        
+        <label for="gracePeriod">Grace Period (days):</label>
+        <input type="number" id="gracePeriod" min="1" value="3">
+    </div>
+
+    <!-- Payment Processing and Status Section -->
+    <button id="payButton" onclick="processPayment()">Pay Now</button>
+    <div id="statusMessage" class="status"></div>
+    
+    <!-- Notification and Actionable Retry Section -->
+    <div id="retryNotification" class="section retry-section" style="display:none;">
+        <p>Payment failed. Would you like to retry?</p>
+        <button onclick="retryPayment()">Retry Payment</button>
+    </div>
+
+    <!-- Payment Health Check Section -->
+    <div id="paymentHealthCheck" class="health-check" style="display:none;">
+        <h4>Payment Health Check</h4>
+        <ul id="healthCheckList">
+            <li>Ensure your card details are correct.</li>
+            <li>Check your internet connection.</li>
+            <li>Make sure there are sufficient funds in your account.</li>
+        </ul>
+        <p id="suggestionText" class="suggestions">Consider using a different payment method.</p>
+    </div>
+
+    <!-- Payment Schedule Suggestions Section -->
+    <div class="section" style="background-color: #ffeeba; padding: 15px; border-radius: 8px;">
+        <h4>Payment Schedule Suggestions</h4>
+        <p>Based on your transaction history, we suggest the following payment times for better success rates:</p>
+        <ul id="suggestionsList">
+            <li>1st of the month</li>
+            <li>Payday (last working day)</li>
+            <li>Weekends (Saturdays)</li>
+        </ul>
+    </div>
+
+    <!-- Unique Feature: Recurring Payment Management -->
+    <div class="section" style="background-color: #ffeeba; padding: 15px; border-radius: 8px;">
+        <h4>Recurring Payments</h4>
+        <label for="recurringPayment">Manage Recurring Payment:</label>
+        <input type="checkbox" id="recurringPayment" onchange="toggleRecurringOptions()">
+        <div id="recurringOptions" style="display:none;">
+            <label for="recurringInterval">Select Interval:</label>
+            <select id="recurringInterval">
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+            </select>
+            <button onclick="setRecurringPayment()">Set Recurring Payment</button>
+        </div>
+    </div>
+
+    <!-- Interactive Feedback Section -->
+    <div class="interactive-feedback">
+        <h4>We Value Your Feedback</h4>
+        <label for="feedbackResponse">How was your payment experience?</label>
+        <input type="text" id="feedbackResponse" placeholder="Your feedback...">
+        <button class="feedback-button" onclick="submitFeedback(document.getElementById('feedbackResponse').value)">Submit Feedback</button>
+    </div>
+
+</div>
+
+<script>
+    let retryCount = 0;
+    let maxRetries = 3;
+    let gracePeriodDays = 3;
+
+    function togglePaymentFields() {
+        const method = document.getElementById("paymentMethod").value;
+        document.getElementById("primaryPaymentFields").style.display = "block"; // Show primary payment fields
+        document.getElementById("cardFields").style.display = method === "card" ? "block" : "none";
+        document.getElementById("upiFields").style.display = method === "upi" ? "block" : "none";
+        document.getElementById("netbankingFields").style.display = method === "netbanking" ? "block" : "none";
+        document.getElementById("paytmFields").style.display = method === "paytm" ? "block" : "none";
+        document.getElementById("phonepeFields").style.display = method === "phonepe" ? "block" : "none";
+        document.getElementById("googlepayFields").style.display = method === "googlepay" ? "block" : "none";
+    }
+
+    function toggleBackupFields() {
+        const method = document.getElementById("backupPaymentMethod").value;
+        document.getElementById("backupPaymentFields").style.display = method ? "block" : "none"; // Show backup payment fields if a method is selected
+        document.getElementById("backupCardFields").style.display = method === "card" ? "block" : "none";
+        document.getElementById("backupPaytmFields").style.display = method === "paytm" ? "block" : "none";
+        document.getElementById("backupPhonepeFields").style.display = method === "phonepe" ? "block" : "none";
+        document.getElementById("backupGooglepayFields").style.display = method === "googlepay" ? "block" : "none";
+    }
+
+    // --- Save User Preferences ---
+    function saveRetryPreference() {
+        maxRetries = document.getElementById("maxRetries").value;
+        gracePeriodDays = document.getElementById("gracePeriod").value;
+    }
+
+    // --- Payment Processing Simulation ---
+    async function processPayment(method = "primary") {
+        saveRetryPreference();
+        const paymentMethod = method === "primary" ? document.getElementById("paymentMethod").value : document.getElementById("backupPaymentMethod").value;
+        const payload = {
+            method: paymentMethod,
+            details: paymentMethod === 'card' ? {
+                number: document.getElementById("cardNumber").value,
+                cvv: document.getElementById("cvv").value,
+                expiry: document.getElementById("expiryDate").value
+            } : paymentMethod === 'upi' ? {
+                upiId: document.getElementById("upiId").value
+            } : paymentMethod === 'netbanking' ? {
+                bankName: document.getElementById("bankSearch").value
+            } : paymentMethod === 'paytm' ? {
+                paytmId: document.getElementById("paytmId").value
+            } : paymentMethod === 'phonepe' ? {
+                phonepeId: document.getElementById("phonepeId").value
+            } : {
+                googlePayId: document.getElementById("googlePayId").value
+            }
+        };
+
+        try {
+            updateStatus("Processing payment...", "info");
+            await simulatePayment(); // Simulate payment processing
+            updateStatus("Payment successful!", "success");
+        } catch (error) {
+            updateStatus("Payment failed. Reason: " + error.reason, "error");
+            handlePaymentFailure(error.reason);
+        }
+    }
+
+    function handlePaymentFailure(reason) {
+        if (retryCount < maxRetries) {
+            document.getElementById("retryNotification").style.display = "block";
+            retryCount++;
+            dynamicRetryStrategy(reason);
+            displayPaymentHealthCheck();
+        } else {
+            updateStatus("Retries exceeded. Please update payment settings.", "error");
+        }
+    }
+
+    function displayPaymentHealthCheck() {
+        document.getElementById("paymentHealthCheck").style.display = "block";
+        const healthCheckList = document.getElementById("healthCheckList");
+        healthCheckList.innerHTML = "<li>Ensure your card details are correct.</li>";
+        healthCheckList.innerHTML += "<li>Check your internet connection.</li>";
+        healthCheckList.innerHTML += "<li>Make sure there are sufficient funds in your account.</li>";
+        document.getElementById("suggestionText").innerText = "Consider using a different payment method.";
+    }
+
+    function updateStatus(message, type) {
+        const statusMessage = document.getElementById("statusMessage");
+        statusMessage.innerText = message;
+        statusMessage.className = status ${type};
+    }
+
+    function simulatePayment() {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                Math.random() > 0.5 ? resolve() : reject({ reason: "network_issue" });
+            }, 1000);
+        });
+    }
+
+    function retryPayment() {
+        if (retryCount < maxRetries) {
+            processPayment();
+        } else {
+            updateStatus("Retries exceeded. Please update payment settings.", "error");
+        }
+    }
+
+    function submitFeedback(response) {
+        alert(Thank you for your feedback: ${response});
+        // Implement feedback logic here (e.g., send to server)
+    }
+
+    // --- Bank Name Filtering ---
+    const banks = ["State Bank of India", "HDFC Bank", "ICICI Bank", "Axis Bank", "Punjab National Bank", "Bank of Baroda", "Canara Bank", "Kotak Mahindra Bank"];
+    
+    function filterBanks() {
+        const input = document.getElementById("bankSearch").value.toLowerCase();
+        const bankList = document.getElementById("bankList");
+        bankList.innerHTML = ""; // Clear previous results
+        const filteredBanks = banks.filter(bank => bank.toLowerCase().includes(input));
+
+        if (filteredBanks.length > 0) {
+            bankList.style.display = "block";
+            filteredBanks.forEach(bank => {
+                const li = document.createElement("li");
+                li.innerText = bank;
+                li.onclick = () => selectBank(bank);
+                bankList.appendChild(li);
+            });
+        } else {
+            bankList.style.display = "none"; // Hide if no matches found
+        }
+    }
+
+    function selectBank(bank) {
+        document.getElementById("bankSearch").value = bank;
+        document.getElementById("bankList").style.display = "none"; // Hide the list after selection
+    }
+
+    function searchBank() {
+        filterBanks(); // Ensure it filters again when clicked
+    }
+
+    function toggleRecurringOptions() {
+        const recurringPayment = document.getElementById("recurringPayment").checked;
+        document.getElementById("recurringOptions").style.display = recurringPayment ? "block" : "none";
+    }
+
+    function setRecurringPayment() {
+        const interval = document.getElementById("recurringInterval").value;
+        alert(Recurring payment set for ${interval}.);
+        // Implement logic for recurring payments here (e.g., schedule payments)
+    }
+</script>
+
+</body>
+</html>
